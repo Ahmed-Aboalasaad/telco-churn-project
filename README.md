@@ -1,28 +1,28 @@
 # 📡 Telco Customer Churn Prediction
 
-> **Course:** Data Exploration and Preparation  
+> **Architecture:** MVC Pattern (Model-View-Controller)  
 > **Dataset:** Telco Customer Churn — Kaggle (Blastchar)  
-> **Goal:** Predict customer churn and deploy as a Streamlit app + FastAPI service.
+> **Deployment:** Streamlit Web App + FastAPI REST API  
+> **ML Framework:** Scikit-learn with 4 classification models
 
 ---
 
 ## 📋 Table of Contents
 
 - [Project Overview](#project-overview)
-- [Dataset Description](#dataset-description)
-- [Problem Statement](#problem-statement)
-- [Tools Used](#tools-used)
+- [Project Architecture](#project-architecture)
+- [Folder Structure](#folder-structure)
+- [Installation & Setup](#installation--setup)
+- [Running the Project](#running-the-project)
+  - [1. Train Models (MVC Pipeline)](#1-train-models-mvc-pipeline)
+  - [2. Run Streamlit Web App](#2-run-streamlit-web-app)
+  - [3. Run FastAPI Server](#3-run-fastapi-server)
+  - [4. Explore Data (Notebook)](#4-explore-data-notebook)
 - [Project Pipeline](#project-pipeline)
-- [Project Folder Structure](#project-folder-structure)
-- [How to Run the Notebook](#how-to-run-the-notebook)
-- [How to Run the Streamlit App](#how-to-run-the-streamlit-app)
-- [FastAPI Usage](#fastapi-usage)
-- [API Endpoint Documentation](#api-endpoint-documentation)
 - [Model Results](#model-results)
+- [API Endpoints](#api-endpoints)
 - [Key Insights](#key-insights)
 - [Business Recommendations](#business-recommendations)
-- [Future Improvements](#future-improvements)
-- [Screenshots](#screenshots)
 
 ---
 

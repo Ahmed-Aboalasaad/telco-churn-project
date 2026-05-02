@@ -19,17 +19,27 @@ import joblib
 import os
 from typing import Literal
 
-# ── Load model once at startup ──────────────────────────────────────────────────
-BASE_DIR   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "final_model.pkl")
+# ── Load model and preprocessor once at startup ─────────────────────────────────
+BASE_DIR            = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH          = os.path.join(BASE_DIR, "models", "final_model.pkl")
+PREPROCESSOR_PATH   = os.path.join(BASE_DIR, "models", "preprocessor.pkl")
 
 try:
-    pipeline = joblib.load(MODEL_PATH)
+    model = joblib.load(MODEL_PATH)
     print(f"✓ Model loaded successfully from {MODEL_PATH}")
 except FileNotFoundError:
     raise RuntimeError(
         f"Model not found at {MODEL_PATH}. "
-        "Please run the Jupyter notebook first to train and save the model."
+        "Please run mvc/run_pipeline.py first to train and save the model."
+    )
+
+try:
+    preprocessor = joblib.load(PREPROCESSOR_PATH)
+    print(f"✓ Preprocessor loaded successfully from {PREPROCESSOR_PATH}")
+except FileNotFoundError:
+    raise RuntimeError(
+        f"Preprocessor not found at {PREPROCESSOR_PATH}. "
+        "Please run mvc/run_pipeline.py first to train and save the preprocessor."
     )
 
 # ── Pydantic input schema ───────────────────────────────────────────────────────
@@ -132,7 +142,7 @@ def health():
     """
     return {
         "status": "ok",
-        "model_type": type(pipeline.named_steps.get("model", pipeline)).__name__,
+        "model_type": type(model).__name__,
         "api_version": "1.0.0"
     }
 
@@ -163,9 +173,12 @@ def predict(customer: CustomerData):
         ]
         df = df[expected_cols]
 
+        # Apply preprocessor transformation
+        X_processed = preprocessor.transform(df)
+
         # Predict
-        churn_class = int(pipeline.predict(df)[0])
-        churn_prob  = float(pipeline.predict_proba(df)[0][1])
+        churn_class = int(model.predict(X_processed)[0])
+        churn_prob  = float(model.predict_proba(X_processed)[0][1])
 
         return PredictionResponse(
             prediction        = churn_class,
@@ -203,8 +216,11 @@ def predict_batch(customers: list[CustomerData]):
         ]
         df = df[expected_cols]
 
-        classes = pipeline.predict(df).tolist()
-        probs   = pipeline.predict_proba(df)[:, 1].tolist()
+        # Apply preprocessor transformation
+        X_processed = preprocessor.transform(df)
+
+        classes = model.predict(X_processed).tolist()
+        probs   = model.predict_proba(X_processed)[:, 1].tolist()
 
         return [
             {
