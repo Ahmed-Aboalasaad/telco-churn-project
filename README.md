@@ -329,7 +329,7 @@ print(response.json())
 
 | Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
 |-------|----------|-----------|--------|----|---------|
-| Logistic Regression | 0.6693 | 0.4198 | 0.6613 | 0.5136 | **0.7376** |
+| Logistic Regression | 0.6693 | 0.4198 | **0.6613** | 0.5136 | **0.7376** |
 | Random Forest | 0.7126 | 0.4610 | 0.5242 | 0.4906 | 0.7329 |
 | XGBoost | 0.7495 | 0.5358 | 0.3817 | 0.4458 | 0.7329 |
 | Gradient Boosting | 0.7438 | 0.5200 | 0.3844 | 0.4420 | 0.7295 |
@@ -337,7 +337,7 @@ print(response.json())
 
 All metrics above are generated using fixed `random_state=42` with SMOTE applied on the training split only.
 
-**Best model:** Logistic Regression — highest ROC-AUC with good recall and interpretability.
+**Best model (by Recall):** Logistic Regression — highest churn-capture rate (`Recall = 0.6613`).
 
 **Why not accuracy?** With ~73% non-churners, predicting "No Churn" always gives 73% accuracy. We prioritize Recall (catching churners) and ROC-AUC (model discrimination).
 
@@ -368,14 +368,10 @@ All metrics above are generated using fixed `random_state=42` with SMOTE applied
 
 ## 🔮 Future Improvements
 
-1. **SMOTE tuning / class weighting experiments** — Further optimize precision-recall tradeoff
-2. **Hyperparameter tuning** — GridSearchCV / Optuna for better model performance
-3. **LightGBM / CatBoost** — Compare against current XGBoost baseline
-4. **SHAP values** — More robust model explanation beyond feature importance
-5. **Customer segmentation** — K-means clustering to identify distinct customer groups
-6. **Time-series features** — If monthly data is available, track behavior trends
-7. **A/B testing integration** — Connect model output to retention campaign system
-8. **Model monitoring** — Track model drift over time in production
+- **Hyperparameter tuning** — GridSearchCV / Optuna for better model performance
+- **LightGBM / CatBoost** — Compare against current XGBoost baseline
+- **SHAP values** — More robust model explanation beyond feature importance
+- **Customer segmentation** — K-means clustering to identify distinct customer groups
 
 ---
 

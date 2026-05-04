@@ -51,6 +51,23 @@ DATA_PATH = project_root / 'data' / 'WA_Fn-UseC_-Telco-Customer-Churn.csv'
 MODEL_PATH = project_root / 'models' / 'final_model.pkl'
 PREPROCESSOR_PATH = project_root / 'models' / 'preprocessor.pkl'
 
+
+def style_metric_winners_and_losers(df, metric_columns):
+    """Highlight best (green) and worst (red) per metric column."""
+    styled = pd.DataFrame('', index=df.index, columns=df.columns)
+    for metric in metric_columns:
+        max_val = df[metric].max()
+        min_val = df[metric].min()
+        styled.loc[df[metric] == max_val, metric] = (
+            'background-color: #163a2f; color: #d1fae5; font-weight: 600; '
+            'border: 1px solid #2e7d5a;'
+        )
+        styled.loc[df[metric] == min_val, metric] = (
+            'background-color: #3a1f2b; color: #ffd6e0; font-weight: 600; '
+            'border: 1px solid #8b3a52;'
+        )
+    return styled
+
 @st.cache_resource
 def load_pipeline():
     """Load and initialize the pipeline"""
@@ -342,7 +359,7 @@ def main():
         
         st.info("""
         This page shows the performance metrics of the trained ML models.
-        The current production model is selected automatically based on the highest ROC-AUC score.
+        The current winner is selected based on the highest Recall score.
         """)
         
         # Display model comparison (from saved results if available)
@@ -350,15 +367,21 @@ def main():
             results_path = project_root / 'outputs' / 'model_comparison.csv'
             if results_path.exists():
                 results_df = pd.read_csv(results_path)
-                if not results_df.empty and 'ROC-AUC' in results_df.columns:
-                    best_row = results_df.sort_values('ROC-AUC', ascending=False).iloc[0]
+                if not results_df.empty and 'Recall' in results_df.columns:
+                    best_row = results_df.sort_values('Recall', ascending=False).iloc[0]
                     st.success(
-                        f"🏆 Current best model: **{best_row['Model']}** "
-                        f"(ROC-AUC: {best_row['ROC-AUC']:.4f})"
+                        f"🏆 Current best model by Recall: **{best_row['Model']}** "
+                        f"(Recall: {best_row['Recall']:.4f})"
                     )
                 
                 st.subheader("📊 Model Comparison")
-                st.dataframe(results_df, width='stretch')
+                metric_cols = [col for col in ['Accuracy', 'Precision', 'Recall', 'F1-Score', 'ROC-AUC'] if col in results_df.columns]
+                styled_results = (
+                    results_df.style
+                    .apply(style_metric_winners_and_losers, axis=None, metric_columns=metric_cols)
+                    .format({col: "{:.4f}" for col in metric_cols})
+                )
+                st.dataframe(styled_results, width='stretch')
                 
                 # Visualize comparison
                 fig = px.bar(
