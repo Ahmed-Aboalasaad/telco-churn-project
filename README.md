@@ -26,7 +26,7 @@
 
 ---
 
-## 🎯 Project Overview
+## Project Overview
 
 This project builds an **end-to-end machine learning pipeline** to predict whether a telecom customer will churn (cancel their subscription). It covers the full ML lifecycle:
 
@@ -72,21 +72,9 @@ Telecom companies lose significant revenue when customers churn. The cost of acq
 
 ---
 
-## 🛠️ Tools Used
+## Used Tools
 
-| Tool | Purpose |
-|------|---------|
-| `Python 3.10+` | Core language |
-| `Pandas` | Data loading, cleaning, manipulation |
-| `NumPy` | Numerical operations |
-| `Plotly` | Interactive EDA visualizations |
-| `Scikit-learn` | Preprocessing pipeline, modeling, evaluation |
-| `XGBoost` | Gradient boosting model |
-| `Joblib` | Model serialization |
-| `Streamlit` | Web app deployment |
-| `FastAPI` | REST API deployment |
-| `Uvicorn` | ASGI server for FastAPI |
-| `Jupyter` | Notebook for analysis |
+| `Python 3.10+` | `Pandas` | `NumPy` | `Plotly` | `Scikit-learn` | `XGBoost` | `Joblib` | `Streamlit` | `FastAPI` | `Uvicorn` | `Jupyter` |
 
 ---
 
@@ -399,7 +387,10 @@ print(response.json())
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Authors
 
-Built as a capstone project for the **Data Exploration and Preparation** course.  
+Ahmed Aboalesaad [LinkedIn](https://www.linkedin.com/in/ahmed-aboalesaad/)  
+Hossam Elsherbiny [LinkedIn](https://www.linkedin.com/in/h-elsherbiny/)  
+Marwan Ragab [LinkedIn](https://www.linkedin.com/in/marwan-ragab-fathy/)  
+  
 Dataset: [Telco Customer Churn — Kaggle](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)
