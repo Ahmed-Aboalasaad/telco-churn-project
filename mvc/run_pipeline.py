@@ -13,6 +13,7 @@ from controllers.pipeline import ChurnPredictionController
 
 def main():
     """Run the complete pipeline"""
+    random_state = 42
     
     # Initialize paths
     project_root = Path(__file__).parent.parent
@@ -32,7 +33,8 @@ def main():
     results_df = controller.full_pipeline(
         data_path=str(data_path),
         model_save_path=str(model_save_path),
-        preprocessor_save_path=str(preprocessor_save_path)
+        preprocessor_save_path=str(preprocessor_save_path),
+        random_state=random_state
     )
     
     # Save results
@@ -42,6 +44,7 @@ def main():
     print("\n" + "=" * 50)
     print("✅ PIPELINE COMPLETED SUCCESSFULLY")
     print("=" * 50)
+    print(f"Using fixed random_state={random_state}")
     print(f"\nNext steps:")
     print(f"1. Run Streamlit app: python -m streamlit run streamlit_app/app.py")
     print(f"2. Run FastAPI server: uvicorn api.main:app --reload")

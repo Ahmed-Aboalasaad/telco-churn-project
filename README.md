@@ -3,7 +3,7 @@
 > **Architecture:** MVC Pattern (Model-View-Controller)  
 > **Dataset:** Telco Customer Churn — Kaggle (Blastchar)  
 > **Deployment:** Streamlit Web App + FastAPI REST API  
-> **ML Framework:** Scikit-learn with 4 classification models
+> **ML Framework:** Scikit-learn + XGBoost with 5 classification models
 
 ---
 
@@ -32,7 +32,7 @@ This project builds an **end-to-end machine learning pipeline** to predict wheth
 
 1. Exploratory Data Analysis (EDA) with interactive Plotly charts
 2. Data cleaning and preprocessing with a scikit-learn `Pipeline`
-3. Training and comparing 4 classification models
+3. Training and comparing 5 classification models (with SMOTE balancing)
 4. Model interpretation and feature importance
 5. Deployment via a **Streamlit web app** and a **FastAPI REST API**
 
@@ -74,7 +74,7 @@ Telecom companies lose significant revenue when customers churn. The cost of acq
 
 ## Used Tools
 
-| `Python 3.10+` | `Pandas` | `NumPy` | `Plotly` | `Scikit-learn` | `XGBoost` | `Joblib` | `Streamlit` | `FastAPI` | `Uvicorn` | `Jupyter` |
+| `Python 3.10+` | `Pandas` | `NumPy` | `Plotly` | `Scikit-learn` | `imbalanced-learn (SMOTE)` | `XGBoost` | `Joblib` | `Streamlit` | `FastAPI` | `Uvicorn` | `Jupyter` |
 
 ---
 
@@ -99,11 +99,14 @@ Preprocessing Pipeline (sklearn)
     │  ├── Numerical: Impute → StandardScaler
     │  └── Categorical: Impute → OneHotEncoder
     ▼
-Model Training (4 models)
+SMOTE Balancing (Train Only)
+    ▼
+Model Training (5 models)
     │  ├── Logistic Regression
     │  ├── Decision Tree
     │  ├── Random Forest
-    │  └── Gradient Boosting
+    │  ├── Gradient Boosting
+    │  └── XGBoost
     ▼
 Evaluation (Recall, F1, ROC-AUC)
     ▼
@@ -144,7 +147,7 @@ pip install -r requirements.txt
 
 The notebook will:
 - Perform EDA with interactive Plotly charts
-- Train and evaluate 4 models
+- Train and evaluate 5 models (with SMOTE on training split)
 - Save the best model to `models/final_model.pkl`
 - Save model comparison to `outputs/model_comparison.csv`
 
@@ -326,12 +329,13 @@ print(response.json())
 
 | Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
 |-------|----------|-----------|--------|----|---------|
-| Logistic Regression | ~0.80 | ~0.65 | ~0.55 | ~0.60 | **~0.84** |
-| Gradient Boosting | ~0.80 | ~0.65 | ~0.54 | ~0.59 | ~0.83 |
-| Random Forest | ~0.79 | ~0.63 | ~0.50 | ~0.56 | ~0.82 |
-| Decision Tree | ~0.76 | ~0.55 | ~0.52 | ~0.53 | ~0.72 |
+| Logistic Regression | 0.6693 | 0.4198 | 0.6613 | 0.5136 | **0.7376** |
+| Random Forest | 0.7126 | 0.4610 | 0.5242 | 0.4906 | 0.7329 |
+| XGBoost | 0.7495 | 0.5358 | 0.3817 | 0.4458 | 0.7329 |
+| Gradient Boosting | 0.7438 | 0.5200 | 0.3844 | 0.4420 | 0.7295 |
+| Decision Tree | 0.6828 | 0.4280 | 0.5995 | 0.4994 | 0.7114 |
 
-> *Metrics vary slightly based on random state and data split.*
+All metrics above are generated using fixed `random_state=42` with SMOTE applied on the training split only.
 
 **Best model:** Logistic Regression — highest ROC-AUC with good recall and interpretability.
 
@@ -364,9 +368,9 @@ print(response.json())
 
 ## 🔮 Future Improvements
 
-1. **SMOTE or class weighting** — Address class imbalance for better recall on churners
+1. **SMOTE tuning / class weighting experiments** — Further optimize precision-recall tradeoff
 2. **Hyperparameter tuning** — GridSearchCV / Optuna for better model performance
-3. **XGBoost / LightGBM** — Potentially better tree-based models
+3. **LightGBM / CatBoost** — Compare against current XGBoost baseline
 4. **SHAP values** — More robust model explanation beyond feature importance
 5. **Customer segmentation** — K-means clustering to identify distinct customer groups
 6. **Time-series features** — If monthly data is available, track behavior trends

@@ -342,7 +342,7 @@ def main():
         
         st.info("""
         This page shows the performance metrics of the trained ML models.
-        The current production model is **Gradient Boosting** with the highest ROC-AUC score.
+        The current production model is selected automatically based on the highest ROC-AUC score.
         """)
         
         # Display model comparison (from saved results if available)
@@ -350,6 +350,12 @@ def main():
             results_path = project_root / 'outputs' / 'model_comparison.csv'
             if results_path.exists():
                 results_df = pd.read_csv(results_path)
+                if not results_df.empty and 'ROC-AUC' in results_df.columns:
+                    best_row = results_df.sort_values('ROC-AUC', ascending=False).iloc[0]
+                    st.success(
+                        f"🏆 Current best model: **{best_row['Model']}** "
+                        f"(ROC-AUC: {best_row['ROC-AUC']:.4f})"
+                    )
                 
                 st.subheader("📊 Model Comparison")
                 st.dataframe(results_df, width='stretch')

@@ -4,6 +4,7 @@ Controller for managing the ML pipeline
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
 from pathlib import Path
 import sys
 
@@ -45,31 +46,39 @@ class ChurnPredictionController:
         print(f"✓ Data loaded: {self.df.shape[0]} rows, {self.X.shape[1]} features")
         return self.df
     
-    def split_data(self, test_size=0.2, random_state=42):
+    def split_data(self, test_size=0.2, random_state=42, use_smote=True):
         """Split data into train and test sets"""
         if self.X is None:
             raise ValueError("Data not loaded yet")
         
-        # Preprocess data
-        X_processed = self.data_processor.fit_and_transform(self.X)
-        
-        # Split data
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            X_processed, self.y,
+        # Split raw data first to avoid preprocessing leakage from test set
+        X_train_raw, X_test_raw, y_train, y_test = train_test_split(
+            self.X, self.y,
             test_size=test_size,
             random_state=random_state,
             stratify=self.y
         )
+
+        # Fit preprocessor on train only, then transform train/test
+        self.X_train = self.data_processor.fit_and_transform(X_train_raw)
+        self.X_test = self.data_processor.transform(X_test_raw)
+        self.y_train = y_train
+        self.y_test = y_test
+
+        if use_smote:
+            smote = SMOTE(random_state=random_state)
+            self.X_train, self.y_train = smote.fit_resample(self.X_train, self.y_train)
+            print(f"✓ SMOTE applied: train set balanced to {self.X_train.shape[0]} samples")
         
         print(f"✓ Data split: {self.X_train.shape[0]} train, {self.X_test.shape[0]} test")
         return self.X_train, self.X_test, self.y_train, self.y_test
     
-    def train_models(self):
+    def train_models(self, random_state=42):
         """Train all models"""
         if self.X_train is None:
             raise ValueError("Data not split yet")
         
-        self.model_trainer.train_all_models(self.X_train, self.y_train)
+        self.model_trainer.train_all_models(self.X_train, self.y_train, random_state=random_state)
         print("✓ All models trained")
         return self.model_trainer.models
     
@@ -103,21 +112,21 @@ class ChurnPredictionController:
         print(f"✓ Model saved: {model_path}")
         print(f"✓ Preprocessor saved: {preprocessor_path}")
     
-    def full_pipeline(self, data_path, model_save_path, preprocessor_save_path):
+    def full_pipeline(self, data_path, model_save_path, preprocessor_save_path, random_state=42):
         """Run complete pipeline: load -> split -> train -> evaluate -> save"""
         
         print("=" * 50)
-        print("🫡 Starting Churn Prediction Pipeline")
+        print("Starting Churn Prediction Pipeline")
         print("=" * 50)
         
         # Load and prepare
         self.load_and_prepare_data(data_path)
         
         # Split
-        self.split_data()
+        self.split_data(random_state=random_state, use_smote=True)
         
         # Train
-        self.train_models()
+        self.train_models(random_state=random_state)
         
         # Evaluate
         self.evaluate_models()

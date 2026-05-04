@@ -36,18 +36,19 @@ Run in terminal:
 
 This will:
   ✓ Load and clean data
-  ✓ Preprocess features
+  ✓ Preprocess features (fit on train only)
+  ✓ Apply SMOTE on training split
   ✓ Split into train/test
-  ✓ Train 4 models (Logistic Regression, Decision Tree, Random Forest, Gradient Boosting)
+  ✓ Train 5 models (Logistic Regression, Decision Tree, Random Forest, Gradient Boosting, XGBoost)
   ✓ Evaluate and compare models
   ✓ Save best model: models/final_model.pkl
   ✓ Save preprocessor: models/preprocessor.pkl
   ✓ Save results: outputs/model_comparison.csv
   
 Expected output:
-  - Best Model: Gradient Boosting
-  - ROC-AUC: 0.8705
-  - Accuracy: 82.83%
+  - Best Model: Logistic Regression
+  - ROC-AUC: ~0.7376
+  - Accuracy: ~66.93%
 """)
 
 print("=" * 64)
@@ -125,7 +126,7 @@ data/                          # Dataset
 └── WA_Fn-UseC_-Telco-Customer-Churn.csv
 
 models/                        # Trained Models
-├── final_model.pkl            # Gradient Boosting model
+├── final_model.pkl            # Best model selected by ROC-AUC
 └── preprocessor.pkl           # Data preprocessor
 
 outputs/                       # Results

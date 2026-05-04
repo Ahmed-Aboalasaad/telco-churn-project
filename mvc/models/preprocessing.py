@@ -34,7 +34,7 @@ class DataProcessor:
         df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
         
         # Fill missing values in TotalCharges
-        df['TotalCharges'].fillna(df['TotalCharges'].median(), inplace=True)
+        df['TotalCharges'] = df['TotalCharges'].fillna(df['TotalCharges'].median())
         
         # Drop customerID as it's not needed
         if 'customerID' in df.columns:

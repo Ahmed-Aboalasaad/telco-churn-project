@@ -7,6 +7,7 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from xgboost import XGBClassifier
 from sklearn.metrics import (accuracy_score, precision_score, recall_score,
                              f1_score, roc_auc_score, confusion_matrix,
                              classification_report)
@@ -22,31 +23,45 @@ class ModelTrainer:
         self.best_model = None
         self.best_model_name = None
     
-    def train_all_models(self, X_train, y_train):
+    def train_all_models(self, X_train, y_train, random_state=42):
         """Train all models"""
         
         # Logistic Regression
-        lr = LogisticRegression(max_iter=1000, random_state=42)
+        lr = LogisticRegression(max_iter=1000, random_state=random_state)
         lr.fit(X_train, y_train)
         self.models['Logistic Regression'] = lr
         
         # Decision Tree
-        dt = DecisionTreeClassifier(max_depth=6, min_samples_split=20, 
-                                    random_state=42)
+        dt = DecisionTreeClassifier(max_depth=6, min_samples_split=20,
+                                    random_state=random_state)
         dt.fit(X_train, y_train)
         self.models['Decision Tree'] = dt
         
         # Random Forest
-        rf = RandomForestClassifier(n_estimators=100, max_depth=10, 
-                                    random_state=42, n_jobs=-1)
+        rf = RandomForestClassifier(n_estimators=100, max_depth=10,
+                                    random_state=random_state, n_jobs=-1)
         rf.fit(X_train, y_train)
         self.models['Random Forest'] = rf
         
         # Gradient Boosting
         gb = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1,
-                                        max_depth=4, random_state=42)
+                                        max_depth=4, random_state=random_state)
         gb.fit(X_train, y_train)
         self.models['Gradient Boosting'] = gb
+
+        # XGBoost
+        xgb = XGBClassifier(
+            n_estimators=200,
+            max_depth=4,
+            learning_rate=0.05,
+            subsample=0.9,
+            colsample_bytree=0.9,
+            objective='binary:logistic',
+            eval_metric='logloss',
+            random_state=random_state
+        )
+        xgb.fit(X_train, y_train)
+        self.models['XGBoost'] = xgb
         
         return self.models
     
