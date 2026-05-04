@@ -59,12 +59,10 @@ def style_metric_winners_and_losers(df, metric_columns):
         max_val = df[metric].max()
         min_val = df[metric].min()
         styled.loc[df[metric] == max_val, metric] = (
-            'background-color: #163a2f; color: #d1fae5; font-weight: 600; '
-            'border: 1px solid #2e7d5a;'
+            'background-color: transparent; color: #86efac; font-weight: 700;'
         )
         styled.loc[df[metric] == min_val, metric] = (
-            'background-color: #3a1f2b; color: #ffd6e0; font-weight: 600; '
-            'border: 1px solid #8b3a52;'
+            'background-color: transparent; color: #fca5a5; font-weight: 700;'
         )
     return styled
 
