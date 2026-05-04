@@ -43,7 +43,7 @@ def main():
     print("✅ PIPELINE COMPLETED SUCCESSFULLY")
     print("=" * 50)
     print(f"\nNext steps:")
-    print(f"1. Run Streamlit app: streamlit run streamlit_app/app.py")
+    print(f"1. Run Streamlit app: python -m streamlit run streamlit_app/app.py")
     print(f"2. Run FastAPI server: uvicorn api.main:app --reload")
 
 if __name__ == "__main__":

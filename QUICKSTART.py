@@ -55,7 +55,7 @@ print("STEP 3: Launch Streamlit Web App")
 print("=" * 64)
 print("""
 Run in terminal:
-  streamlit run streamlit_app/app.py
+  python -m streamlit run streamlit_app/app.py
 
 Opens in browser: http://localhost:8501
 
@@ -185,7 +185,7 @@ Issue: "Module not found" errors
   → Or: cd to project root before running
 
 Issue: Streamlit app won't start
-  → Check: streamlit run streamlit_app/app.py
+  → Check: python -m streamlit run streamlit_app/app.py
   → Check: models/final_model.pkl exists
 
 Issue: Missing dependencies
@@ -198,11 +198,11 @@ print("=" * 64)
 print("""
 1. ✓ Install dependencies: pip install -r requirements.txt
 2. ✓ Train models: python mvc/run_pipeline.py
-3. ✓ Run Streamlit: streamlit run streamlit_app/app.py
+3. ✓ Run Streamlit: python -m streamlit run streamlit_app/app.py
 4. ✓ Explore notebook: jupyter notebook notebooks/02_visualization_eda.ipynb
 5. ✓ Check API: uvicorn api.main:app --reload
 
-Happy Data Science! 🚀
+Happy Data Science! ❤️
 """)
 
 # Check if models exist

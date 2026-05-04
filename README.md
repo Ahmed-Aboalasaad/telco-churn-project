@@ -131,7 +131,7 @@ Save Pipeline (final_model.pkl)
 
 
 
-## 🚀 How to Run the Notebook
+## ⚙️ How to Run the Notebook
 
 ### 1. Set up environment
 
@@ -166,7 +166,7 @@ The notebook will:
 Make sure you have run the notebook first to generate `models/final_model.pkl`.
 
 ```bash
-streamlit run app/app.py
+python -m streamlit run streamlit_app/app.py
 ```
 
 Then open your browser to: **http://localhost:8501**

@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 import plotly.express as px
 import plotly.graph_objects as go
+from sklearn.metrics import roc_curve, auc
 
 # Add MVC modules to path
 project_root = Path(__file__).parent.parent
@@ -67,6 +68,27 @@ def load_pipeline():
         st.error("❌ Model files not found. Please train the model first using the MVC pipeline.")
         return None, None
 
+@st.cache_data
+def compute_roc_curve_data():
+    """Train baseline models and return ROC curve points for each model."""
+    controller = ChurnPredictionController()
+    controller.load_and_prepare_data(str(DATA_PATH))
+    X_train, X_test, y_train, y_test = controller.split_data()
+    controller.train_models()
+
+    roc_data = []
+    for model_name, model in controller.model_trainer.models.items():
+        y_pred_proba = model.predict_proba(X_test)[:, 1]
+        fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
+        roc_data.append({
+            'model': model_name,
+            'fpr': fpr.tolist(),
+            'tpr': tpr.tolist(),
+            'auc': float(auc(fpr, tpr))
+        })
+
+    return roc_data
+
 # ==================== Main App ====================
 
 def main():
@@ -123,7 +145,7 @@ def main():
         to reduce revenue loss and improve customer lifetime value.
         """)
         
-        st.subheader("🚀 How to Use")
+        st.subheader("⚙️ How to Use")
         st.write("""
         1. **Explore Data** → Go to "EDA & Insights" to understand customer patterns
         2. **Make Predictions** → Go to "Predict" to enter customer data and get churn predictions
@@ -145,11 +167,11 @@ def main():
             col1, col2 = st.columns(2)
             
             with col1:
-                st.plotly_chart(viz.plot_numeric_distribution('tenure'), use_container_width=True)
+                st.plotly_chart(viz.plot_numeric_distribution('tenure'), width='stretch')
             with col2:
-                st.plotly_chart(viz.plot_numeric_distribution('MonthlyCharges'), use_container_width=True)
+                st.plotly_chart(viz.plot_numeric_distribution('MonthlyCharges'), width='stretch')
             
-            st.plotly_chart(viz.plot_churn_distribution(), use_container_width=True)
+            st.plotly_chart(viz.plot_churn_distribution(), width='stretch')
         
         with tab2:
             st.subheader("Churn Rate by Key Features")
@@ -157,15 +179,15 @@ def main():
             feature_select = st.selectbox(
                 "Select feature:",
                 ['Contract', 'InternetService', 'PaymentMethod', 'OnlineSecurity', 
-                 'TechSupport', 'Gender', 'SeniorCitizen']
+                 'TechSupport', 'gender', 'SeniorCitizen']
             )
             
             fig = viz.plot_categorical_churn_rate(feature_select)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         with tab3:
             st.subheader("Feature Correlations")
-            st.plotly_chart(viz.plot_correlation_heatmap(), use_container_width=True)
+            st.plotly_chart(viz.plot_correlation_heatmap(), width='stretch')
         
         with tab4:
             st.subheader("🔍 Key Insights")
@@ -241,7 +263,7 @@ def main():
             streaming_movies = st.selectbox("Streaming Movies", ["No", "Yes", "No internet service"])
         
         # Make prediction button
-        if st.button("🔮 Predict Churn", use_container_width=True):
+        if st.button("🔮 Predict Churn", width='stretch'):
             try:
                 # Create input dataframe with all required columns
                 input_data = pd.DataFrame({
@@ -330,7 +352,7 @@ def main():
                 results_df = pd.read_csv(results_path)
                 
                 st.subheader("📊 Model Comparison")
-                st.dataframe(results_df, use_container_width=True)
+                st.dataframe(results_df, width='stretch')
                 
                 # Visualize comparison
                 fig = px.bar(
@@ -342,12 +364,45 @@ def main():
                     title='Model Performance Metrics',
                     height=400
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
             else:
                 st.warning("Model comparison results not found. Run the training pipeline first.")
         
         except Exception as e:
             st.warning(f"Could not load model comparison: {str(e)}")
+
+        st.subheader("📉 ROC Curves")
+        try:
+            roc_data = compute_roc_curve_data()
+            roc_fig = go.Figure()
+
+            for curve in roc_data:
+                roc_fig.add_trace(go.Scatter(
+                    x=curve['fpr'],
+                    y=curve['tpr'],
+                    mode='lines',
+                    name=f"{curve['model']} (AUC={curve['auc']:.3f})",
+                    line=dict(width=2)
+                ))
+
+            roc_fig.add_trace(go.Scatter(
+                x=[0, 1],
+                y=[0, 1],
+                mode='lines',
+                name='Random Classifier',
+                line=dict(dash='dash', color='gray')
+            ))
+
+            roc_fig.update_layout(
+                title='ROC Curves - All Models',
+                xaxis_title='False Positive Rate',
+                yaxis_title='True Positive Rate',
+                height=500,
+                hovermode='closest'
+            )
+            st.plotly_chart(roc_fig, width='stretch')
+        except Exception as e:
+            st.warning(f"Could not generate ROC curves: {str(e)}")
         
         st.subheader("📌 Key Metrics Explained")
         col1, col2 = st.columns(2)

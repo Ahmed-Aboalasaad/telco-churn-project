@@ -195,7 +195,7 @@ controller.full_pipeline()
     └── processor.save_preprocessor()
 
 
-FLOW 2: Web App (streamlit run streamlit_app/app.py)
+FLOW 2: Web App (python -m streamlit run streamlit_app/app.py)
 ────────────────────────────────────────────────────
 
 Load Pipeline

@@ -107,7 +107,7 @@ class ChurnPredictionController:
         """Run complete pipeline: load -> split -> train -> evaluate -> save"""
         
         print("=" * 50)
-        print("🚀 Starting Churn Prediction Pipeline")
+        print("🫡 Starting Churn Prediction Pipeline")
         print("=" * 50)
         
         # Load and prepare
